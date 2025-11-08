@@ -155,17 +155,20 @@ Route::middleware(['auth', \App\Http\Middleware\RoleMiddleware::class . ':admin'
 
         // Rutas para días no laborables
         Route::prefix('dias-no-laborables')->name('dias-no-laborables.')->group(function () {
-            Route::get('/', [DiaNoLaborableController::class, 'index'])->name('index');
+            // Rutas específicas PRIMERO (antes de las rutas con parámetros)
             Route::get('/crear', [DiaNoLaborableController::class, 'create'])->name('create');
+            Route::get('/proximos', [DiaNoLaborableController::class, 'proximos'])->name('proximos');
+            Route::get('/del-mes', [DiaNoLaborableController::class, 'delMes'])->name('del-mes');
+            Route::get('/laborables', [DiaNoLaborableController::class, 'diasLaborables'])->name('laborables');
+            Route::get('/motivos', [DiaNoLaborableController::class, 'motivos'])->name('motivos');
+
+            // Rutas con parámetros DESPUÉS
+            Route::get('/', [DiaNoLaborableController::class, 'index'])->name('index');
             Route::post('/', [DiaNoLaborableController::class, 'store'])->name('store');
             Route::get('/{id}', [DiaNoLaborableController::class, 'show'])->name('show');
             Route::get('/{id}/editar', [DiaNoLaborableController::class, 'edit'])->name('edit');
             Route::put('/{id}', [DiaNoLaborableController::class, 'update'])->name('update');
             Route::delete('/{id}', [DiaNoLaborableController::class, 'destroy'])->name('destroy');
-            Route::get('/proximos', [DiaNoLaborableController::class, 'proximos'])->name('proximos');
-            Route::get('/del-mes', [DiaNoLaborableController::class, 'delMes'])->name('del-mes');
-            Route::get('/laborables', [DiaNoLaborableController::class, 'diasLaborables'])->name('laborables');
-            Route::get('/motivos', [DiaNoLaborableController::class, 'motivos'])->name('motivos');
         });
 
         // Rutas para horarios
@@ -180,7 +183,7 @@ Route::middleware(['auth', \App\Http\Middleware\RoleMiddleware::class . ':emplea
     Route::get('/citas', [EmpleadoController::class, 'citas'])->name('citas');
 
     // Rutas actualizadas para evitar conflictos
-    Route::post('/citas/{id}/cambiar-estado', [EmpleadoController::class, 'cambiarEstadoCita'])->name('citas.cambiar-estado');
+    Route::post('/citas/{id}/cambiar-estado', [EmpleadoController::class, 'cambiarEstado'])->name('citas.cambiar-estado');
     Route::post('/citas/{id}/agregar-observaciones', [EmpleadoController::class, 'agregarObservaciones'])->name('citas.agregar-observaciones');
     Route::post('/citas/{id}/finalizar-completa', [EmpleadoController::class, 'finalizarCitaCompleta'])->name('citas.finalizar-completa');
     Route::post('/citas/finalizar-simple', [EmpleadoController::class, 'finalizarCitaSimple'])->name('citas.finalizar-simple');

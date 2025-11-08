@@ -19,7 +19,7 @@ class UsuarioFactory extends Factory
             'email_verified_at' => now(),
             'password' => bcrypt('password123'), // password por defecto
             'rol' => 'cliente',
-            'estado' => true,
+            'estado' => 'activo', // Cambiado de boolean a string
             'remember_token' => Str::random(10),
         ];
     }
@@ -64,7 +64,7 @@ class UsuarioFactory extends Factory
     public function inactivo(): static
     {
         return $this->state(fn (array $attributes) => [
-            'estado' => false,
+            'estado' => 'inactivo', // Cambiado de boolean a string
         ]);
     }
 
