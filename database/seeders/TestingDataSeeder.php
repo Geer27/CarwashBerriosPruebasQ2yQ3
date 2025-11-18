@@ -180,62 +180,104 @@ class TestingDataSeeder extends Seeder
 
         echo "   ✅ 5 servicios creados\n\n";
 
-        // 5. CREAR CITAS PARA HOY
-        echo "📅 Creando citas para HOY...\n";
+        // 5. CREAR CITAS PARA HOY (PARA PROBAR GESTIÓN DE CITAS)
+        echo "📅 Creando citas para HOY (pruebas de Gestión de Citas)...\n";
         $hoy = Carbon::today();
 
-        // Cita 1: HOY 9:00 AM - Pendiente
+        // Cita 1: HOY 9:00 AM - CONFIRMADA (lista para cambiar a EN_PROCESO)
         $cita_hoy_1 = Cita::create([
             'usuario_id' => $cliente1->id,
             'vehiculo_id' => $vehiculo1->id,
             'fecha_hora' => $hoy->copy()->setTime(9, 0, 0),
-            'estado' => 'pendiente',
-            'observaciones' => null,
+            'estado' => 'confirmada',
+            'observaciones' => 'Cliente llegó temprano, auto Toyota Corolla blanco',
         ]);
         $cita_hoy_1->servicios()->attach([
-            $servicio1->id => ['precio' => $servicio1->precio],
-            $servicio3->id => ['precio' => $servicio3->precio]
+            $servicio1->id => ['precio' => 30.00],
+            $servicio3->id => ['precio' => 50.00]
         ]);
 
-        // Cita 2: HOY 10:30 AM - Confirmada
+        // Cita 2: HOY 10:30 AM - CONFIRMADA (para probar cambio de estado)
         $cita_hoy_2 = Cita::create([
             'usuario_id' => $cliente2->id,
             'vehiculo_id' => $vehiculo3->id,
             'fecha_hora' => $hoy->copy()->setTime(10, 30, 0),
             'estado' => 'confirmada',
-            'observaciones' => 'Cliente solicitó lavado rápido',
+            'observaciones' => 'Cliente solicitó lavado rápido, Ford Escape rojo',
         ]);
         $cita_hoy_2->servicios()->attach([
-            $servicio2->id => ['precio' => $servicio2->precio]
+            $servicio2->id => ['precio' => 70.00]
         ]);
 
-        // Cita 3: HOY 2:00 PM - En proceso
+        // Cita 3: HOY 2:00 PM - EN_PROCESO (lista para agregar observaciones y finalizar)
         $cita_hoy_3 = Cita::create([
             'usuario_id' => $cliente3->id,
             'vehiculo_id' => $vehiculo4->id,
             'fecha_hora' => $hoy->copy()->setTime(14, 0, 0),
             'estado' => 'en_proceso',
-            'observaciones' => 'Vehículo muy sucio, necesita limpieza profunda',
+            'observaciones' => '[' . $hoy->format('d/m/Y H:i') . '] Estado cambiado a \'En proceso\' por Carlos Empleado',
         ]);
         $cita_hoy_3->servicios()->attach([
-            $servicio1->id => ['precio' => $servicio1->precio],
-            $servicio5->id => ['precio' => $servicio5->precio]
+            $servicio1->id => ['precio' => 30.00],
+            $servicio5->id => ['precio' => 80.00]
         ]);
 
-        // Cita 4: HOY 4:30 PM - Confirmada
+        // Cita 4: HOY 3:00 PM - EN_PROCESO (para probar finalización con pago efectivo)
         $cita_hoy_4 = Cita::create([
             'usuario_id' => $cliente1->id,
             'vehiculo_id' => $vehiculo2->id,
-            'fecha_hora' => $hoy->copy()->setTime(16, 30, 0),
-            'estado' => 'confirmada',
-            'observaciones' => null,
+            'fecha_hora' => $hoy->copy()->setTime(15, 0, 0),
+            'estado' => 'en_proceso',
+            'observaciones' => '[' . $hoy->format('d/m/Y H:i') . '] Estado cambiado a \'En proceso\' por Carlos Empleado' . "\n" .
+                               '[' . $hoy->format('d/m/Y H:i') . '] Carlos Empleado: Vehículo requiere encerado adicional',
         ]);
         $cita_hoy_4->servicios()->attach([
-            $servicio2->id => ['precio' => $servicio2->precio],
-            $servicio4->id => ['precio' => $servicio4->precio]
+            $servicio2->id => ['precio' => 70.00],
+            $servicio3->id => ['precio' => 50.00]
         ]);
 
-        echo "   ✅ 4 citas para hoy creadas (9:00, 10:30, 14:00, 16:30)\n\n";
+        // Cita 5: HOY 4:30 PM - CONFIRMADA (para probar transición inválida)
+        $cita_hoy_5 = Cita::create([
+            'usuario_id' => $cliente2->id,
+            'vehiculo_id' => $vehiculo3->id,
+            'fecha_hora' => $hoy->copy()->setTime(16, 30, 0),
+            'estado' => 'confirmada',
+            'observaciones' => 'Cliente llegó puntual',
+        ]);
+        $cita_hoy_5->servicios()->attach([
+            $servicio4->id => ['precio' => 100.00]
+        ]);
+
+        // Cita 6: HOY 5:00 PM - EN_PROCESO (para probar pago con tarjeta)
+        $cita_hoy_6 = Cita::create([
+            'usuario_id' => $cliente3->id,
+            'vehiculo_id' => $vehiculo5->id,
+            'fecha_hora' => $hoy->copy()->setTime(17, 0, 0),
+            'estado' => 'en_proceso',
+            'observaciones' => '[' . $hoy->format('d/m/Y H:i') . '] Estado cambiado a \'En proceso\' por María Asistente',
+        ]);
+        $cita_hoy_6->servicios()->attach([
+            $servicio1->id => ['precio' => 30.00],
+            $servicio3->id => ['precio' => 50.00],
+            $servicio5->id => ['precio' => 80.00]
+        ]);
+
+        // Cita 7: HOY 5:30 PM - PENDIENTE (para probar finalización simple)
+        $cita_hoy_7 = Cita::create([
+            'usuario_id' => $cliente1->id,
+            'vehiculo_id' => $vehiculo1->id,
+            'fecha_hora' => $hoy->copy()->setTime(17, 30, 0),
+            'estado' => 'pendiente',
+            'observaciones' => null,
+        ]);
+        $cita_hoy_7->servicios()->attach([
+            $servicio1->id => ['precio' => 30.00]
+        ]);
+
+        echo "   ✅ 7 citas para hoy creadas:\n";
+        echo "      - 3 CONFIRMADAS (para cambiar a en_proceso)\n";
+        echo "      - 3 EN_PROCESO (para agregar observaciones y finalizar)\n";
+        echo "      - 1 PENDIENTE (para finalización simple)\n\n";
 
         // 6. CREAR CITAS PARA MAÑANA
         echo "📅 Creando citas para MAÑANA...\n";
@@ -495,7 +537,10 @@ class TestingDataSeeder extends Seeder
         echo "🧼 SERVICIOS: 5 servicios activos\n\n";
 
         echo "📅 CITAS:\n";
-        echo "   - HOY: 4 citas (9:00, 10:30, 14:00, 16:30)\n";
+        echo "   - HOY: 7 citas para pruebas de Gestión de Citas\n";
+        echo "     · 3 CONFIRMADAS → listas para cambiar a EN_PROCESO\n";
+        echo "     · 3 EN_PROCESO → listas para agregar observaciones/finalizar\n";
+        echo "     · 1 PENDIENTE → para finalización simple\n";
         echo "   - MAÑANA: 3 citas (8:00, 11:00, 15:00)\n";
         echo "   - " . $fechaEspecifica->format('Y-m-d') . ": 2 citas\n";
         echo "   - HISTÓRICAS (finalizadas): 5 citas\n";
